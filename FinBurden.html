@@ -1,6 +1,22 @@
 <!DOCTYPE html>
+
 <script src="https://d3js.org/d3.v3.min.js"></script> 
 
+<style>
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 185px;					
+    height: 17px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: white;	
+    border: 2px;
+	border-color: black;
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+</style>
 
 <html>
 <body>
@@ -13,6 +29,7 @@ of that home to the household. This a simply the percentage of household's month
 that is needed for monthly housing costs.</p>
 
 <script>
+
 d3.csv("Burden.csv", function(data) {
 	var canvas = d3.select("body").append("svg")
 		.attr("width", 1200)
@@ -27,14 +44,19 @@ d3.csv("Burden.csv", function(data) {
 				.attr("y", function(d,i) {return i * 50; })
 				.attr("fill", "lightgreen")
 				.attr("stroke", "black")
-				.on('mouseover', function(d) {
-					d3.select(this)
-					  .attr('fill', 'lightblue');
-				  })
-				.on('mouseout', function(d) {
-					d3.select(this)
-					  .attr('fill', 'lightgreen');
-				  });
+				.on("mouseover", function(d) {		
+							div.transition()		
+								.duration(200)		
+								.style("opacity", .9);		
+							div	.html(d.Decade+": \n"+d.Burden+"% of monthly income")	
+								.style("left", (d3.event.pageX) + "px")		
+								.style("top", (d3.event.pageY - 28) + "px");	
+				})					
+				.on("mouseout", function(d) {		
+							div.transition()		
+								.duration(500)		
+								.style("opacity", 0);	
+				});
 	
 	var labels = canvas.selectAll("text")
 				.data(data)
@@ -49,10 +71,9 @@ d3.csv("Burden.csv", function(data) {
 		.delay(1000)
 		.attr("width", function(d) { return d.Burden *150; });
 		
-		
-	labels.transition()
-		.delay(3000)
-		.text(function(d) { return "\xa0\xa0"+d.Decade+": "+d.Burden+"% of monthly income"; });
+	var div = d3.select("body").append("div")	
+				.attr("class", "tooltip")				
+				.style("opacity", 0);
 	
 	})
    

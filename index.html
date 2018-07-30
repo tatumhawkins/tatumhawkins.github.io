@@ -2,16 +2,31 @@
 
 <script src="https://d3js.org/d3.v3.min.js"></script> 
 
+<style>
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 120px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: white;	
+    border: 2px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+</style>
+
 <html>
+
 <body>
 <a href = "essay.html"><button> About the Visualization </button></a>
 <a href = "FinBurden.html"><button> Financial Burden </button></a>
 
-<h1>How many houses have been built throughout the year?</h1>
+<h1>How many houses have been built throughout the years?</h1>
 <p>While the number of homes built in each decade has clearly changed over time, 
 has that had any effect on the size of the homes built (as measured by the 
 number of bedrooms per home)? You might be surprised. </p>
-
 
 <script>
 
@@ -29,14 +44,19 @@ d3.csv("Bedrooms.csv", function(data) {
 				.attr("y", function(d,i) {return i * 50; })
 				.attr("fill", "lightgreen")
 				.attr("stroke", "black")
-				.on('mouseover', function(d) {
-					d3.select(this)
-					  .attr('fill', 'lightblue');
-				  })
-				.on('mouseout', function(d) {
-					d3.select(this)
-					  .attr('fill', 'lightgreen');
-				  });
+				.on("mouseover", function(d) {		
+							div.transition()		
+								.duration(200)		
+								.style("opacity", .9);		
+							div	.html(d.Decade+": \n"+d.Breakdown)	
+								.style("left", (d3.event.pageX) + "px")		
+								.style("top", (d3.event.pageY - 28) + "px");	
+				})					
+				.on("mouseout", function(d) {		
+							div.transition()		
+								.duration(500)		
+								.style("opacity", 0);	
+				});
 	
 	var labels = canvas.selectAll("text")
 				.data(data)
@@ -55,6 +75,10 @@ d3.csv("Bedrooms.csv", function(data) {
 	labels.transition()
 		.delay(3000)
 		.text(function(d) { return "\xa0\xa0 "+d.Decade+": "+d.Bedrooms+" houses built"; });
+	
+	var div = d3.select("body").append("div")	
+				.attr("class", "tooltip")				
+				.style("opacity", 0);
 	
 	})
    
