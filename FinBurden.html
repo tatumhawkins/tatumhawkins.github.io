@@ -1,12 +1,65 @@
 <!DOCTYPE html>
+<script src="https://d3js.org/d3.v3.min.js"></script> 
+
+
 <html>
 <body>
 <a href = "essay.html"><button> About the Visualization </button></a>
 <a href = "index.html"><button> Houses Built </button></a>
 
+<h1>How affordable are homes over the years?</h1>
+<p>One way to measure the affordability of a home is to calculate the financial burden 
+of that home to the household. This a simply the percentage of household's monthly income 
+that is needed for monthly housing costs.</p>
 
+<script>
+d3.csv("Burden.csv", function(data) {
+	var canvas = d3.select("body").append("svg")
+		.attr("width", 1200)
+		.attr("height", 500)
+		
+	var bars = canvas.selectAll("rect")
+			.data(data)
+			.enter()
+				.append("rect")
+				.attr("height", 40)
+				.attr("width", 55)
+				.attr("y", function(d,i) {return i * 50; })
+				.attr("fill", "lightgreen")
+				.attr("stroke", "black")
+				.on('mouseover', function(d) {
+					d3.select(this)
+					  .attr('fill', 'lightblue');
+				  })
+				.on('mouseout', function(d) {
+					d3.select(this)
+					  .attr('fill', 'lightgreen');
+				  });
+	
+	var labels = canvas.selectAll("text")
+				.data(data)
+				.enter()
+					.append("text")
+					.attr("fill", "black")
+					.attr("y", function(d,i) {return i * 50 +25; })
+					.text(function(d) {return "\xa0\xa0 "+d.Decade; });
+	
+	bars.transition()
+		.duration(2000)
+		.delay(1000)
+		.attr("width", function(d) { return d.Burden *150; });
+		
+		
+	labels.transition()
+		.delay(3000)
+		.text(function(d) { return "\xa0\xa0"+d.Decade+": "+d.Burden+"% of monthly income"; });
+	
+	})
+   
+</script>
 
-<p>Financial burden graphs will go here hopefully!</p>
+</body>
+</html>
 
 </body>
 </html>
